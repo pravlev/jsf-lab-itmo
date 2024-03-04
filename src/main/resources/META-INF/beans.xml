@@ -1,0 +1,12 @@
+<beans
+        xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd"
+        version="1.2" bean-discovery-mode="annotated">
+
+    <bean id="points" class="lev.prav.model.Points" scope="session"/>
+
+    <bean id="PointRepository" class="lev.prav.repositories.PointRepository" scope="session"/>
+
+    <bean id="AreaCheck" class="lev.prav.services.AreaCheck" scope="session"/>
+</beans>

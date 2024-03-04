@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <h:outputScript name="canvas.js"/>
+    <h:outputStylesheet name="style.css"/>
+</h:head>
+<header>
+<!--    <img id="itmo_logo" src="https://itmo.ru/promo/itmo-logo-dark.svg">-->
+    <h:graphicImage url="https://itmo.ru/promo/itmo-logo-dark.svg"/>
+    <h1 id="lab">Лабораторная работа №3 Щербинин Лев P3231 вариант 938472</h1>
+</header>
+<hr/>
+<h:body>
+    <div id="mainGroup">
+        <div>
+            <canvas id="canvasDisplayOnly" width="350" height="350" style="background-color: blanchedalmond;">
+                Ваш броузер не поддерживает canvas
+            </canvas>
+        </div>
+        <div id="formMenu">
+            <h:form>
+                <h:panelGrid columns="1">
+                    <h:panelGrid columns="2">
+                        <h:outputText value="X"/>
+                        <!--p:spinner id="X" autocomplete="false" min="-3.0" max="3.0" value="#{points.x}" stepFactor="1"/-->
+                        <p:selectOneButton widgetVar="xInputWidget" id="X" value="#{points.x}">
+                            <f:selectItem itemValue="-3" itemLabel="-3"/>
+                            <f:selectItem itemValue="-2" itemLabel="-2"/>
+                            <f:selectItem itemValue="-1" itemLabel="-1"/>
+                            <f:selectItem itemValue="0" itemLabel="0"/>
+                            <f:selectItem itemValue="1" itemLabel="1"/>
+                            <f:selectItem itemValue="2" itemLabel="2"/>
+                            <f:selectItem itemValue="3" itemLabel="3"/>
+                            <f:selectItem itemValue="4" itemLabel="4"/>
+                            <f:selectItem itemValue="5" itemLabel="5"/>
+                        </p:selectOneButton>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <h:outputText value="Y"/>
+                        <!--p:inputNumber name="y" id="y" maxlength="10" value="#{points.y}" decimalSeparator="." maxValue="5.0" minValue="-3.0"/-->
+                        <p:inputText widgetVar="yInputWidget" id="y" styleClass="form-input" value="#{points.y}"
+                                     maxlength="8" placeholder="Enter Y" validator="custom.yValidator">
+                            <f:validateRequired />
+                            <f:validateDoubleRange minimum="-5" maximum="3"/>
+                        </p:inputText>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <h:outputText value="R"/>
+                        <!--p:spinner id="R" autocomplete="false" maxlength="4" min="1" max="5" value="#{points.r}" stepFactor="0.5">
+                            <p:ajax update="drawCanvasPanel"/>
+                        </p:spinner-->
+                        <p:selectOneMenu id="R" value="#{points.r}" widgetVar="rWidget">
+                            <f:selectItem itemLabel="1" itemValue="1"/>
+                            <f:selectItem itemLabel="2" itemValue="2"/>
+                            <f:selectItem itemLabel="3" itemValue="3"/>
+                            <f:selectItem itemLabel="4" itemValue="4"/>
+                            <f:selectItem itemLabel="5" itemValue="5"/>
+                            <p:ajax update="drawCanvasPanel"/>
+                        </p:selectOneMenu>
+                    </h:panelGrid>
+                </h:panelGrid>
+
+                <div>
+                    <p:commandButton ajax="true" id="submit" value="Отправить"
+                                     action="#{PointRepository.addPoint(points)}"
+                                     update="table @form drawCanvasPanel errorPanel"/>
+                    <h:button id="comeback" styleClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" style="padding: 0.5rem 1rem; margin-top: 5px; margin-bottom: 5px;" value="Начальная страница" outcome="go-index"/>
+                    <p:commandButton ajax="true" id="clear" value="Отчистить"
+                                     action="#{PointRepository.clearTable()}"
+                                     update="table @form drawCanvasPanel errorPanel"/>
+                </div>
+            </h:form>
+        </div>
+    </div>
+
+    <div>
+        <p:dataTable id="table" value="#{PointRepository.points}" var="point"  lazy="true" >
+            <p:column headerText="ID">
+                <h:outputText value="#{point.id}"/>
+
+            </p:column>
+            <p:column headerText="X">
+                <h:outputText value="#{point.x}">
+                    <f:convertNumber type="number"
+                                     maxFractionDigits="3"
+                                     groupingUsed="false"/>
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Y">
+                <h:outputText value="#{point.y}">
+                    <f:convertNumber type="number"
+                                     maxFractionDigits="3"
+                                     groupingUsed="false"/>
+                </h:outputText>
+            </p:column>
+            <p:column headerText="R">
+                <h:outputText value="#{point.r}"/>
+            </p:column>
+            <p:column headerText="Результат">
+                <h:outputText value="#{point.result ? 'Попал' : 'Не попал' }"/>
+            </p:column>
+            <p:column headerText="Дата отправки">
+                <h:outputText value="#{point.date}" >
+                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm" />
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Время выполнения">
+                <h:outputText value="#{point.duration}"/>
+            </p:column>
+        </p:dataTable>
+        <h:panelGroup id="errorPanel">
+            <h:outputText value="#{PointRepository.errorText}"/>
+            <h:outputScript>
+                $("#errorPanel").removeClass("animate");
+                if ("#{PointRepository.errorText}" != "") {
+                    $("#errorPanel").addClass("animate");
+                } else {
+                }
+            </h:outputScript>
+        </h:panelGroup>
+    </div>
+</h:body>
+<p:remoteCommand name="addPoint" action="#{PointRepository.addJsonPoint()}" update="table drawCanvasPanel errorPanel" process="@this"/>
+<h:panelGroup id="drawCanvasPanel">
+    <h:outputScript>
+        draw(#{PointRepository.jsonPoints}, #{points.r});
+    </h:outputScript>
+</h:panelGroup>
+</html>

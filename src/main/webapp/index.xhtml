@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui" xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <h:outputStylesheet name="style.css"/>
+</h:head>
+
+<h:body>
+    <header>
+<!--        <img id="itmo_logo" src="https://itmo.ru/promo/itmo-logo-dark.svg">-->
+        <h:graphicImage url="https://itmo.ru/promo/itmo-logo-dark.svg"/>
+        <h1 id="lab">Лабораторная работа №3 Щербинин Лев P3231 вариант 938472</h1>
+    </header>
+    <hr/>
+    <div id="indexMain">
+        <div id="main">
+            <h:panelGrid columns="2">
+                <h:outputText value="Серверное время"/>
+                <h:outputText id="clock" styleClass="Time" value="#{clock.dateTime}">
+                    <f:converter converterId="CustomDateConvertor"/>
+                </h:outputText>
+                <h:outputText value="Клиентское время"/>
+                <div id="clientTime" class="Time">
+
+                </div>
+            </h:panelGrid>
+            <h:messages />
+            <!--h:inputTextarea>
+                <f:validateRegex pattern="[a-z, A-Z]*"/>
+            </h:inputTextarea-->
+
+            <p:remoteCommand name="updateServerTime" action="#{clock.update()}" update="clock"/>
+            <h:outputScript>
+                document.getElementById("clientTime").innerHTML = new Date().toLocaleString().replaceAll(".", "/").replace(",", "");
+                setInterval(()=>{
+                    updateServerTime();
+                    document.getElementById("clientTime").innerHTML = new Date().toLocaleString().replaceAll(".", "/").replace(",", "");
+                }, 12000)
+            </h:outputScript>
+            <h:form id="form" styleClass="buttons-container">
+                <h:button styleClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" style="padding: 0.5rem 1rem; margin-top: 12px;" value="Главная" action="go-to-main" id="go-to-main-button"/>
+            </h:form>
+        </div>
+    </div>
+</h:body>
+
+</html>
